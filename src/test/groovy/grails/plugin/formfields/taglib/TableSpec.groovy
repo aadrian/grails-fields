@@ -141,10 +141,11 @@ class TableSpec extends AbstractFormFieldsTagLibSpec {
 		def table = XML.parse(output)
 
 		then: "The first 7 headers should be (limited by maxProperties not being set)"
-		table.thead.tr.th.a.collect { it.text().trim() } == ['Id', 'Name', 'Date Of Birth', 'Address', 'Biography', 'Emails', 'Gender']
+		table.thead.tr.th.a.collect { it.text().trim() }.sort() == ['Address', 'Biography', 'Date Of Birth', 'Emails', 'Gender', 'Id', 'Name']
 
 		where:
 		except << [
+			'salutation, grailsDeveloper, picture, anotherPicture, password, lastUpdated',
 			'salutation,grailsDeveloper,picture,anotherPicture,password,lastUpdated',
 			['salutation', 'grailsDeveloper', 'picture', 'anotherPicture', 'password', 'lastUpdated']
 		]
@@ -157,10 +158,10 @@ class TableSpec extends AbstractFormFieldsTagLibSpec {
 		def table = XML.parse(output)
 
 		then:
-		table.thead.tr.th.a.collect { it.text().trim() } == [
+		table.thead.tr.th.a.collect { it.text().trim() }.sort() == [
 			'Id', 'Salutation', 'Name', 'Date Of Birth', 'Address', 'Grails Developer', 'Picture',
 			'Another Picture', 'Password', 'Biography', 'Emails', 'Gender', 'Last Updated', 'Minor'
-		]
+		].sort()
 
 		where:
 		except << ['', [], null]
