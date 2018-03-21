@@ -137,7 +137,24 @@ class TableSpec extends AbstractFormFieldsTagLibSpec {
 	@Issue('https://github.com/grails-fields-plugin/grails-fields/issues/257')
 	void "table tag allows to specify the except"() {
 		when:
-		def output = applyTemplate('<f:table collection="collection" except="${except}"/>', [collection: personList, except: except])
+		def output = applyTemplate('<f:table collection="collection" except="${except}"  maxProperties="0"/>', [collection: personList, except: except])
+		def table = XML.parse(output)
+
+		then: "The first 7 headers should be (limited by maxProperties not being set)"
+		table.thead.tr.th.a.collect { it.text().trim() }.sort() == ['Address', 'Biography', 'Date Of Birth', 'Emails', 'Gender', 'Id', 'Name']
+
+		where:
+		except << [
+			'salutation, grailsDeveloper, picture, anotherPicture, password, lastUpdated, minor',
+			'salutation,grailsDeveloper,picture,anotherPicture,password,lastUpdated,minor',
+			['salutation', 'grailsDeveloper', 'picture', 'anotherPicture', 'password', 'minor', 'lastUpdated']
+		]
+	}
+
+	@Issue('https://github.com/grails-fields-plugin/grails-fields/issues/257')
+	void "table tag allows to specify the except as empty will render id and lastUpdated"() {
+		when:
+		def output = applyTemplate('<f:table collection="collection" except="${except}" maxProperties="0"/>', [collection: personList, except: except])
 		def table = XML.parse(output)
 
 		then: "The first 7 headers should be (limited by maxProperties not being set)"
